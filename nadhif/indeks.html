@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeTIK II Jombang - Pesantren IT Energik</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins untuk kesan modern dan energik -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        // Cek tema saat pertama dimuat untuk menghindari flicker (mencegah layar berkedip)
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        tailwind.config = {
+            darkMode: 'class', // Mengaktifkan mode gelap berbasis class
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#0052FF',
+                            cyan: '#06b6d4',
+                            yellow: '#facc15',
+                            dark: '#0f172a',
+                            cobalt: '#0047AB'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 1. Animated Gradient Background */
+        .bg-animated-gradient {
+            background: linear-gradient(-45deg, #0052FF, #06b6d4, #8b5cf6, #3b82f6);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 2. Floating Animation untuk elemen dekoratif */
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+        .floating-delayed {
+            animation: float 5s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* 3. Hover Effect: Scale Up & Neon Glow */
+        .card-neon {
+            transition: all 0.4s ease-out;
+        }
+        .card-neon:hover {
+            transform: translateY(-12px) scale(1.03);
+            /* Bayangan cyan cerah dan biru untuk light mode */
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(0, 82, 255, 0.4);
+            border-color: #06b6d4;
+            z-index: 10;
+        }
+
+        /* Neon Glow Khusus Dark Mode */
+        .dark .card-neon:hover {
+            box-shadow: 0 0 20px rgba(0, 71, 171, 0.6), 0 0 40px rgba(6, 182, 212, 0.4);
+            border-color: #06b6d4;
+        }
+
+        /* Tombol Neon */
+        .btn-neon {
+            transition: all 0.3s ease;
+        }
+        .btn-neon:hover {
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.8), 0 0 30px rgba(250, 204, 21, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .dark .btn-neon:hover {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.8), 0 0 30px rgba(0, 71, 171, 0.5);
+        }
+
+        /* 4. IntersectionObserver: Scroll Reveal Base Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Typing Cursor */
+        .typing-cursor {
+            display: inline-block;
+            width: 4px;
+            height: 1.2em;
+            background-color: #facc15;
+            vertical-align: middle;
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+        }
+        .dark .typing-cursor {
+            background-color: #06b6d4;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-gray-200 antialiased overflow-x-hidden transition-colors duration-300">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-white/90 dark:bg-slate-950/80 backdrop-blur-lg shadow-sm dark:shadow-none dark:border-b dark:border-white/10 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-blue dark:bg-brand-cobalt rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/50 dark:shadow-brand-cobalt/50">
+                        P
+                    </div>
+                    <span class="font-extrabold text-2xl tracking-tight text-brand-dark dark:text-white">PeTIK II <span class="text-brand-blue dark:text-brand-cyan">Jombang</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#beranda" class="font-semibold text-slate-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-cyan transition">Beranda</a>
+                    <a href="#keunggulan" class="font-semibold text-slate-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-cyan transition">Keunggulan</a>
+                    <a href="#lokasi" class="font-semibold text-slate-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-cyan transition">Lokasi</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <!-- Tombol Theme Toggle -->
+                    <button id="theme-toggle" class="text-slate-600 dark:text-gray-300 hover:text-brand-blue dark:hover:text-brand-cyan transition p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
+                        <i class="fas fa-moon dark:hidden text-xl"></i>
+                        <i class="fas fa-sun hidden dark:block text-xl"></i>
+                    </button>
+                    <div class="hidden md:block">
+                        <a href="https://webpetik.petikjombang.com/" class="bg-brand-blue dark:bg-brand-cobalt text-white px-6 py-2.5 rounded-full font-bold hover:bg-blue-700 dark:hover:bg-blue-800 transition shadow-lg shadow-blue-500/30 dark:shadow-brand-cobalt/30">Daftar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="beranda" class="bg-animated-gradient dark:bg-none dark:bg-slate-950 min-h-screen relative flex items-center justify-center pt-20 overflow-hidden transition-colors duration-300">
+        <!-- Elemen Dekoratif Floating -->
+        <div class="absolute top-1/4 left-10 w-24 h-24 bg-yellow-400 dark:bg-brand-cobalt rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 floating"></div>
+        <div class="absolute bottom-1/4 right-10 w-32 h-32 bg-cyan-400 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 floating-delayed"></div>
+        <div class="absolute top-1/3 right-1/4 text-white/20 dark:text-slate-700 text-6xl floating"><i class="fas fa-code"></i></div>
+        <div class="absolute bottom-1/3 left-1/4 text-white/20 dark:text-slate-700 text-5xl floating-delayed"><i class="fas fa-laptop-code"></i></div>
+
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+            <span class="inline-block py-1 px-3 rounded-full bg-white/20 dark:bg-white/5 backdrop-blur-sm text-white dark:text-gray-300 text-sm font-semibold mb-6 border border-white/30 dark:border-white/10">
+                Penerimaan Santri Baru Telah Dibuka! 🚀
+            </span>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-lg">
+                Masa Depan Cerah Dimulai dari <br>
+                <span class="text-brand-yellow dark:text-brand-cyan">PeTIK II Jombang</span>
+            </h1>
+            
+            <!-- Typing Effect Container -->
+            <div class="h-24 md:h-12 mb-10">
+                <p class="text-xl md:text-3xl text-cyan-100 dark:text-gray-400 font-semibold drop-shadow-md">
+                    <span id="typing-text"></span><span class="typing-cursor dark:bg-brand-cyan"></span>
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://webpetik.petikjombang.com/" class="btn-neon bg-brand-yellow dark:bg-brand-cobalt text-brand-dark dark:text-white px-8 py-4 rounded-full font-extrabold text-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-rocket"></i> Daftar Sekarang
+                </a>
+                <a href="#lokasi" class="px-8 py-4 rounded-full font-bold text-lg text-white dark:text-gray-300 bg-white/20 dark:bg-white/5 backdrop-blur-md border border-white/50 dark:border-white/10 hover:bg-white/30 dark:hover:bg-white/10 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-map-marker-alt"></i> Lihat Lokasi
+                </a>
+            </div>
+        </div>
+
+        <!-- Scroll down indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white dark:text-slate-500 animate-bounce">
+            <i class="fas fa-chevron-down text-3xl opacity-80"></i>
+        </div>
+    </section>
+
+    <!-- 9 Keunggulan Section -->
+    <section id="keunggulan" class="py-24 bg-slate-50 dark:bg-slate-900 relative overflow-hidden transition-colors duration-300">
+        <!-- Background accents -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-brand-cyan/10 dark:bg-brand-cobalt/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-brand-blue/10 dark:bg-cyan-500/5 rounded-full blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-brand-cyan dark:text-brand-cyan font-bold tracking-wide uppercase text-sm mb-2">Kenapa Memilih Kami?</h2>
+                <h3 class="text-4xl md:text-5xl font-extrabold text-brand-dark dark:text-white">9 Keunggulan PeTIK II</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-brand-blue to-brand-cyan dark:from-brand-cobalt dark:to-brand-cyan mx-auto mt-6 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Card 1 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-cyan/5 dark:bg-brand-cobalt/10 rounded-bl-full -z-10 group-hover:bg-brand-cyan/20 dark:group-hover:bg-brand-cobalt/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-blue to-brand-cyan dark:from-slate-700 dark:to-brand-cobalt text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-cyan-500/30 dark:shadow-cobalt/30">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Gratis 100%</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Bebas biaya pendidikan dan asrama selama masa pendidikan berlangsung.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-yellow/5 dark:bg-cyan-500/10 rounded-bl-full -z-10 group-hover:bg-brand-yellow/20 dark:group-hover:bg-cyan-500/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-brand-yellow dark:from-slate-700 dark:to-cyan-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-yellow-500/30 dark:shadow-cyan-500/30">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Fasilitas IT Mumpuni</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Disediakan komputer/laptop spesifikasi tinggi untuk praktik harian santri.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 dark:bg-blue-500/10 rounded-bl-full -z-10 group-hover:bg-green-500/20 dark:group-hover:bg-blue-500/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 dark:from-slate-700 dark:to-blue-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-green-500/30 dark:shadow-blue-500/30">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Uang Saku Bulanan</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Dukungan uang saku setiap bulan agar santri fokus belajar tanpa beban.</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 dark:bg-indigo-500/10 rounded-bl-full -z-10 group-hover:bg-purple-500/20 dark:group-hover:bg-indigo-500/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 dark:from-slate-700 dark:to-indigo-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-purple-500/30 dark:shadow-indigo-500/30">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Kurikulum Fokus IT</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Belajar Programming, Web Development, & Jaringan secara intensif dan modern.</p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/5 dark:bg-brand-cobalt/10 rounded-bl-full -z-10 group-hover:bg-red-500/20 dark:group-hover:bg-brand-cobalt/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-500 dark:from-slate-700 dark:to-brand-cobalt text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-red-500/30 dark:shadow-brand-cobalt/30">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Sertifikasi & Tahfidz</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Mendapatkan sertifikat keahlian resmi BNSP sekaligus target hafalan Al-Qur'an.</p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-blue/5 dark:bg-cyan-500/10 rounded-bl-full -z-10 group-hover:bg-brand-blue/20 dark:group-hover:bg-cyan-500/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-500 dark:from-slate-700 dark:to-cyan-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-blue-500/30 dark:shadow-cyan-500/30">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Siap Kerja</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Lulusan dicetak untuk mandiri dan langsung siap terjun ke dunia industri teknologi.</p>
+                </div>
+
+                <!-- Card 7 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 dark:bg-blue-600/10 rounded-bl-full -z-10 group-hover:bg-orange-500/20 dark:group-hover:bg-blue-600/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 dark:from-slate-700 dark:to-blue-700 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-orange-500/30 dark:shadow-blue-600/30">
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Transport Gratis</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Biaya transportasi kepulangan saat liburan pesantren ditanggung penuh.</p>
+                </div>
+
+                <!-- Card 8 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/5 dark:bg-indigo-600/10 rounded-bl-full -z-10 group-hover:bg-teal-500/20 dark:group-hover:bg-indigo-600/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-teal-400 to-emerald-500 dark:from-slate-700 dark:to-indigo-600 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-teal-500/30 dark:shadow-indigo-600/30">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Pembinaan Karakter</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Pendidikan akhlakul karimah yang membina santri beradab Islami.</p>
+                </div>
+
+                <!-- Card 9 -->
+                <div class="reveal bg-white dark:bg-white/5 p-8 rounded-3xl shadow-lg dark:shadow-none border border-slate-100 dark:border-white/10 dark:backdrop-blur-lg card-neon relative overflow-hidden group" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-cyan/5 dark:bg-brand-cobalt/10 rounded-bl-full -z-10 group-hover:bg-brand-cyan/20 dark:group-hover:bg-brand-cobalt/20 transition"></div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-brand-dark to-slate-600 dark:from-slate-800 dark:to-slate-900 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-md shadow-slate-500/30 dark:shadow-slate-900/30 border border-slate-700">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-brand-dark dark:text-white mb-3">Kerjasama Industri</h4>
+                    <p class="text-slate-600 dark:text-gray-400 font-medium">Jejaring luas dengan perusahaan IT ternama untuk penyaluran magang/kerja.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="py-20 relative overflow-hidden">
+        <!-- Vibrant background in light mode, sleek gradient in dark mode -->
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-blue via-indigo-600 to-brand-cyan dark:from-slate-900 dark:via-slate-800 dark:to-brand-cobalt transform skew-y-2 origin-top-left -z-10 transition-colors duration-300"></div>
+        
+        <div class="max-w-5xl mx-auto px-4 text-center text-white reveal">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-6">Siap Menjadi Ahli IT yang Berakhlak?</h2>
+            <p class="text-xl mb-10 text-cyan-100 dark:text-gray-300 max-w-2xl mx-auto">Kuota terbatas! Daftarkan dirimu segera dan raih masa depan gilang-gemilang bersama PeTIK II Jombang.</p>
+            <a href="https://webpetik.petikjombang.com/" class="btn-neon inline-block bg-white dark:bg-brand-cobalt text-brand-blue dark:text-white px-10 py-5 rounded-full font-extrabold text-xl shadow-xl border border-transparent dark:border-white/20">
+                Formulir Pendaftaran Online
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="lokasi" class="bg-brand-dark dark:bg-black pt-20 pb-10 text-slate-300 dark:text-gray-400 border-t-4 border-brand-cyan dark:border-brand-cobalt mt-12 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <!-- Tentang -->
+                <div class="reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-brand-blue dark:bg-brand-cobalt rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-500/50 dark:shadow-brand-cobalt/50">
+                            P
+                        </div>
+                        <span class="font-extrabold text-2xl tracking-tight text-white">PeTIK II <span class="text-brand-cyan dark:text-brand-cyan">Jombang</span></span>
+                    </div>
+                    <p class="text-sm leading-relaxed mb-6">
+                        Lembaga Pendidikan berbasis Pesantren yang mendidik santri menjadi tenaga profesional IT dengan kurikulum modern dan pembinaan akhlak mulia.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 dark:bg-slate-800 flex items-center justify-center hover:bg-brand-blue dark:hover:bg-brand-cobalt hover:text-white transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 dark:bg-slate-800 flex items-center justify-center hover:bg-pink-500 dark:hover:bg-brand-cyan hover:text-white transition duration-300"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 dark:bg-slate-800 flex items-center justify-center hover:bg-red-500 dark:hover:bg-blue-600 hover:text-white transition duration-300"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Kontak -->
+                <div class="reveal" style="transition-delay: 100ms;">
+                    <h4 class="text-white font-bold text-lg mb-6 uppercase tracking-wider relative inline-block">
+                        Hubungi Kami
+                        <span class="absolute -bottom-2 left-0 w-1/2 h-1 bg-brand-cyan dark:bg-brand-cobalt rounded-full"></span>
+                    </h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-brand-cyan dark:text-brand-cyan mt-1"></i>
+                            <span>Jl. Raya Mojoagung No.123, Jombang, Jawa Timur</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone-alt text-brand-cyan dark:text-brand-cyan"></i>
+                            <span>0812-3456-7890 (WhatsApp Admin)</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope text-brand-cyan dark:text-brand-cyan"></i>
+                            <span>info@petikjombang.com</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Link Cepat -->
+                <div class="reveal" style="transition-delay: 200ms;">
+                    <h4 class="text-white font-bold text-lg mb-6 uppercase tracking-wider relative inline-block">
+                        Link Cepat
+                        <span class="absolute -bottom-2 left-0 w-1/2 h-1 bg-brand-cyan dark:bg-brand-cobalt rounded-full"></span>
+                    </h4>
+                    <ul class="space-y-3">
+                        <li><a href="#beranda" class="hover:text-brand-cyan dark:hover:text-brand-cyan transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs"></i> Beranda</a></li>
+                        <li><a href="#keunggulan" class="hover:text-brand-cyan dark:hover:text-brand-cyan transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs"></i> Keunggulan</a></li>
+                        <li><a href="#" class="hover:text-brand-cyan dark:hover:text-brand-cyan transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs"></i> Syarat Pendaftaran</a></li>
+                        <li><a href="#" class="hover:text-brand-cyan dark:hover:text-brand-cyan transition flex items-center gap-2"><i class="fas fa-chevron-right text-xs"></i> FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
+                <p>&copy; 2026 PeTIK II Jombang. All rights reserved.</p>
+                <p> Develop by Nadill </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Interaktif -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 0. Theme Toggle Logic
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            
+            themeToggleBtn.addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // 1. Typing Effect Logic
+            const textToType = "Pesantren yang Melahirkan Santri dengan Kemampuan IT";
+            const typingElement = document.getElementById("typing-text");
+            let index = 0;
+
+            function type() {
+                if (index < textToType.length) {
+                    typingElement.innerHTML += textToType.charAt(index);
+                    index++;
+                    // Variasi kecepatan ketik sedikit untuk realistis
+                    let typeSpeed = Math.random() * (100 - 50) + 50; 
+                    setTimeout(type, typeSpeed);
+                }
+            }
+            
+            // Mulai ngetik setelah delay dikit
+            setTimeout(type, 800);
+
+            // 2. IntersectionObserver (Scroll Reveal)
+            const revealElements = document.querySelectorAll(".reveal");
+            
+            const revealOptions = {
+                threshold: 0.15, // Muncul ketika 15% elemen terlihat
+                rootMargin: "0px 0px -50px 0px" // Trigger agak ke atas dari bawah layar
+            };
+
+            const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("active");
+                    }
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => {
+                revealOnScroll.observe(el);
+            });
+
+            // 3. Navbar scroll effect (tambah bayangan saat turun)
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    navbar.classList.add('shadow-md');
+                    navbar.classList.add('dark:shadow-brand-cobalt/10');
+                    navbar.classList.add('dark:shadow-md');
+                } else {
+                    navbar.classList.remove('shadow-md');
+                    navbar.classList.remove('dark:shadow-brand-cobalt/10');
+                    navbar.classList.remove('dark:shadow-md');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
